@@ -36,6 +36,8 @@ from DISClib.Algorithms.Sorting import insertionsort as ins
 from DISClib.Algorithms.Sorting import selectionsort as se
 from DISClib.Algorithms.Sorting import mergesort as merg
 from DISClib.Algorithms.Sorting import quicksort as quk
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 assert cf
 
 """
@@ -51,9 +53,12 @@ def new_data_structs():
     Inicializa las estructuras de datos del modelo. Las crea de
     manera vacía para posteriormente almacenar la información.
     """
-    #TODO: Inicializar las estructuras de datos
-    pass
+    #TO DO: Inicializar las estructuras de datos
+    data_structs = {"años": None}
+    
+    data_structs["años"] = mp.newMap(numelements=49,maptype= 'PROBING', loadfactor= 0.5,cmpfunction=compare_años_mapa)
 
+    return data_structs
 
 # Funciones para agregar informacion al modelo
 
@@ -62,17 +67,49 @@ def add_data(data_structs, data):
     Función para agregar nuevos elementos a la lista
     """
     #TODO: Crear la función para agregar elementos a una lista
-    pass
+    
+    d = new_data(data["Año"], data["Código actividad económica"], data["Nombre actividad económica"],
+                 data["Código sector económico"], data["Nombre sector económico"], data["Código subsector económico"],
+                 data["Nombre subsector económico"], data["Total ingresos netos"], data["Total costos y gastos"],
+                 data["Total saldo a pagar"], data["Total saldo a favor"], data["Total retenciones"],data["Costos y gastos nómina"])
+    
+    if mp.contains(data_structs["años"],data["Año"]):
+        pair_key_val = mp.get(data_structs["años"],data["Año"])
+        lista_año = me.getValue(pair_key_val)
+        lt.addLast(lista_año,d)
+        
+    else:
+        lista_años = lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(lista_años,d)
+        mp.put(data_structs["años"],data["Año"],lista_años)
+
+    return data_structs
 
 
 # Funciones para creacion de datos
 
-def new_data(id, info):
+def new_data(año, codigo, nom_act_ec, codigo_sec_ec,nombre_sec_ec, codigo_subsector,nombre_sebsector,
+             total_ingr_netos, total_costos_gastos,saldo_a_pagar, saldo_favor,total_retenciones,costos_gastos_nomina):
     """
     Crea una nueva estructura para modelar los datos
     """
-    #TODO: Crear la función para estructurar los datos
-    pass
+    #TO DO: Crear la función para estructurar los datos
+    data = {}
+    data["Año"] = año
+    data["Código actividad económica"] = codigo
+    data["Nombre actividad económica"] = nom_act_ec
+    data["Código sector económico"] = codigo_sec_ec
+    data["Nombre sector económico"] = nombre_sec_ec
+    data["Código subsector económico"]= codigo_subsector
+    data["Nombre subsector económico"] = nombre_sebsector
+    data["Total ingresos netos"] = total_ingr_netos
+    data["Total costos y gastos"] = total_costos_gastos
+    data["Total saldo a pagar"] = saldo_a_pagar
+    data["Total saldo a favor"] = saldo_favor
+    data["Total retenciones"] = total_retenciones
+    data["Costos y gastos nómina"] = costos_gastos_nomina
+
+    return data
 
 
 # Funciones de consulta
@@ -159,12 +196,18 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compare(data_1, data_2):
+def compare_años_mapa(año, impuesto):
     """
     Función encargada de comparar dos datos
     """
-    #TODO: Crear función comparadora de la lista
-    pass
+    #TO DO: Crear función comparadora de la lista
+    yearentry = me.getKey(impuesto)
+    if (año == yearentry):
+        return 0
+    elif (año > yearentry):
+        return 1
+    else:
+        return -1
 
 # Funciones de ordenamiento
 
