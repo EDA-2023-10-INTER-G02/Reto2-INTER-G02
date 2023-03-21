@@ -62,21 +62,35 @@ def print_menu():
     print("9- Ejecutar Requerimiento 8")
     print("0- Salir")
 
+def castBoolean(value):
+    """
+    Convierte un valor a booleano
+    """
+    if value in ('True', 'true', 'TRUE', 'T', 't', '1', 1, True):
+        return True
+    else:
+        return False
 
-def load_data(control):
+def load_data(control,mem):
     """
     Carga los datos
     """
     #TO DO: Realizar la carga de datos
-    data = controller.load_data(control,"x")
+    data = controller.load_data(control,mem)
     return data
-
+    
+def print_load_answer(answer):
+    if isinstance(answer, (list, tuple)) is True:
+        print("Tiempo [ms]: " + str(answer[0]), "||",
+              "Memoria [kB]: " + str(answer[1]) + "\n")
+    else:
+        print("Tiempo [ms]: ", f"{answer:.3f}"+ "\n")
 
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
+    #TODO: Realizar la función para imprimir un elemento0
     pass
 
 def print_req_1(control):
@@ -158,9 +172,15 @@ if __name__ == "__main__":
         inputs = input('Seleccione una opción para continuar\n')
         try:
             if int(inputs) == 1:
+                print("Desea observar el uso de memoria? (True/False)")
+                mem = input("Respuesta: ")
+                mem = castBoolean(mem)
                 print("Cargando información de los archivos ....\n")
-                data = load_data(control)
-                print(data)
+                answer = load_data(control,mem)
+                #size = controller.size(control)
+                #print("Se cargaron " + str(size) + " filas")
+                print_load_answer(answer)
+                
                 
             elif int(inputs) == 2:
                 print_req_1(control)

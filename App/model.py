@@ -54,9 +54,11 @@ def new_data_structs():
     manera vacía para posteriormente almacenar la información.
     """
     #TO DO: Inicializar las estructuras de datos
-    data_structs = {"años": None}
+    data_structs = {"años": None,
+                    "data": None}
     
-    data_structs["años"] = mp.newMap(numelements=49,maptype= 'PROBING', loadfactor= 0.5,cmpfunction=compare_años_mapa)
+    data_structs["años"] = mp.newMap(numelements=2452,maptype= 'CHAINING', loadfactor= 8)
+    #data_structs["data"] = lt.newList(datastructure="ARRAY_LIST")
 
     return data_structs
 
@@ -83,7 +85,9 @@ def add_data(data_structs, data):
         lt.addLast(lista_años,d)
         mp.put(data_structs["años"],data["Año"],lista_años)
 
-    return data_structs
+    #lt.addLast(data_structs["data"],d)
+    #merg.sort(data_structs["data"],sort_criteria_actividad_ec)
+    sort_codigo_act_ec(data_structs)
 
 
 # Funciones para creacion de datos
@@ -126,9 +130,17 @@ def data_size(data_structs):
     """
     Retorna el tamaño de la lista de datos
     """
-    #TODO: Crear la función para obtener el tamaño de una lista
-    pass
-
+    #TO DO: Crear la función para obtener el tamaño de una lista
+    llaves_años = mp.keySet(data_structs["años"])
+    size = 0
+    
+    for año in lt.iterator(llaves_años):
+        pair_llave_valor = mp.get(data_structs["años"],año)
+        valor = me.getValue(pair_llave_valor)
+        tamaño = lt.size(valor)
+        size += tamaño
+        
+    return size
 
 def req_1(data_structs):
     """
@@ -196,23 +208,22 @@ def req_8(data_structs):
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
-def compare_años_mapa(año, impuesto):
+def compare(data_1, data_2, id):
     """
     Función encargada de comparar dos datos
     """
     #TO DO: Crear función comparadora de la lista
-    yearentry = me.getKey(impuesto)
-    if (año == yearentry):
-        return 0
-    elif (año > yearentry):
-        return 1
+    if data_1[id] < data_2[id]:
+        return True
+    elif data_1[id] > data_2[id]:
+        return False
     else:
-        return -1
+        return "equal"
 
 # Funciones de ordenamiento
 
 
-def sort_criteria(data_1, data_2):
+def sort_criteria_actividad_ec(data_1, data_2):
     """sortCriteria criterio de ordenamiento para las funciones de ordenamiento
 
     Args:
@@ -222,13 +233,29 @@ def sort_criteria(data_1, data_2):
     Returns:
         _type_: _description_
     """
-    #TODO: Crear función comparadora para ordenar
-    pass
+    #TO DO: Crear función comparadora para ordenar
+    year = compare(data_1, data_2, "Año")
+    if year == "equal":
+        return compare(data_1, data_2, "Código actividad económica")
+    else:
+        return year
 
 
-def sort(data_structs):
+def sort_codigo_act_ec(data_structs):
     """
     Función encargada de ordenar la lista con los datos
     """
-    #TODO: Crear función de ordenamiento
-    pass
+    #TO DO: Crear función de ordenamiento
+    llaves = mp.keySet(data_structs["años"])
+    for año in lt.iterator(llaves):
+        llave_valor = mp.get(data_structs["años"],año)
+        lista_año = me.getValue(llave_valor)
+        merg.sort(lista_año,sort_criteria_actividad_ec)
+        
+def comparar_año(año1,año2):
+    if año1 < año2:
+        return True
+    else:
+        return False
+            
+            
