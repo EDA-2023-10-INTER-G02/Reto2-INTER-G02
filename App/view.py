@@ -89,7 +89,26 @@ def print_tabla_load_data(control):
                 colalign=['right','right','left','right','left','right','left','left','left','left',"left"], 
                 maxcolwidths=[7,7,15,7,20,8,20,10,10,10,10], maxheadercolwidths=[7,7,15,7,20,8,20,10,10,10,10]))
         
-        
+def print_tabla_req1(impuesto,año,cod_sector_ec):
+    lista_de_listas = []
+    titulos = list(impuesto.keys())
+    headerss = ["Código actividad económica","Nombre actividad económica"]
+    lista_actividad = list(impuesto.values())
+    valores = lista_actividad[1:3]
+    
+    for i in range(5,11):
+        titulo = titulos[i]
+        headerss.append(titulo)
+        valor = lista_actividad[i]
+        valores.append(valor)
+
+    lista_de_listas.append(valores)
+    print("\nActividad económica con el mayor saldo total de impuestos a pagar para el sector "+cod_sector_ec+" en el año " +año)
+    
+    print(tab(lista_de_listas,tablefmt='grid',headers=headerss,maxcolwidths=[12,20,15,20,15,12,12,12],
+              maxheadercolwidths=[12,20,15,20,15,12,12,12]))
+    
+      
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
@@ -97,12 +116,13 @@ def print_data(control, id):
     #TODO: Realizar la función para imprimir un elemento0
     pass
 
-def print_req_1(control):
+def print_req_1(control,año,cod_sector_ec):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    # TO DO: Imprimir el resultado del requerimiento 1
+    impuesto = controller.req_1(control,año,cod_sector_ec)
+    print_tabla_req1(impuesto,año,cod_sector_ec)
 
 
 def print_req_2(control):
@@ -182,7 +202,9 @@ if __name__ == "__main__":
                 print_tabla_load_data(control)
                 
             elif int(inputs) == 2:
-                print_req_1(control)
+                año = input("Elija un año: ")
+                cod_sector_ec = input("Elija un sector económico: ")
+                print_req_1(control, año,cod_sector_ec)
 
             elif int(inputs) == 3:
                 print_req_2(control)

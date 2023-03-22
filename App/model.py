@@ -58,8 +58,6 @@ def new_data_structs():
                     "data": None}
     
     data_structs["años"] = {}
-    #data_structs["data"] = lt.newList(datastructure="ARRAY_LIST")
-
     return data_structs
 
 # Funciones para agregar informacion al modelo
@@ -129,12 +127,27 @@ def data_size(lista):
     size = lt.size(lista)
     return size
 
-def req_1(data_structs):
+def req_1(data_structs,año,cod_sector_ec):
     """
     Función que soluciona el requerimiento 1
     """
-    # TODO: Realizar el requerimiento 1
-    pass
+    # TO DO: Realizar el requerimiento 1
+    lista_año = data_structs["años"][año]
+    list_esp_cod = lt.newList(datastructure="ARRAY_LIST")
+    
+    for actividad in lt.iterator(lista_año):
+        if actividad["Código sector económico"] == cod_sector_ec:
+            lt.addLast(list_esp_cod,actividad)
+            
+    mayor = 0
+    for impuesto in lt.iterator(list_esp_cod):
+        saldo_pagar = impuesto["Total saldo a pagar"]
+        saldo_pagar_int = int(saldo_pagar)
+        
+        if saldo_pagar_int > mayor:
+            mayor = saldo_pagar_int
+            rta = impuesto      
+    return rta
 
 
 def req_2(data_structs):
@@ -244,6 +257,17 @@ def sort_codigo_act_ec(data_structs):
     for año in data_structs["años"]:
         lista_año = data_structs["años"][año]
         merg.sort(lista_año,sort_criteria_actividad_ec)
+        
+def sort_crit_total_saldo_pagar(data_1,data_2):
+    """
+    Función encargada de ordenar la lista con los datos
+    """
+    #TO DO: Crear función de ordenamiento
+    saldo = compare(data_1, data_2, "Total saldo a pagar")
+    if saldo == "equal":
+        return compare(data_1, data_2, "Código actividad económica")
+    else:
+        return saldo
         
         
 def comparar_año(año1,año2):
