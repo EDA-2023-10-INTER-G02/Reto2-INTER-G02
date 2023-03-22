@@ -29,7 +29,7 @@ from DISClib.ADT import queue as qu
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 assert cf
-from tabulate import tabulate
+from tabulate import tabulate as tab
 import traceback
 
 """
@@ -62,30 +62,34 @@ def print_menu():
     print("9- Ejecutar Requerimiento 8")
     print("0- Salir")
 
-def castBoolean(value):
-    """
-    Convierte un valor a booleano
-    """
-    if value in ('True', 'true', 'TRUE', 'T', 't', '1', 1, True):
-        return True
-    else:
-        return False
 
-def load_data(control,mem):
+def load_data(control):
     """
     Carga los datos
     """
     #TO DO: Realizar la carga de datos
-    data = controller.load_data(control,mem)
+    data = controller.load_data(control)
     return data
     
-def print_load_answer(answer):
-    if isinstance(answer, (list, tuple)) is True:
-        print("Tiempo [ms]: " + str(answer[0]), "||",
-              "Memoria [kB]: " + str(answer[1]) + "\n")
-    else:
-        print("Tiempo [ms]: ", f"{answer:.3f}"+ "\n")
-
+def print_tabla_load_data(control):
+    for año in control["años"]:
+        lista = control["años"][año]
+        data = controller.get_3_last_and_first(lista)
+        lista_de_listas = []
+        
+        for actividad in lt.iterator(data):
+            titulos = list(actividad.keys())
+            headerss = titulos[0:11]
+            lista_actividad = list(actividad.values())
+            valores = lista_actividad[0:11]
+            lista_de_listas.append(valores)
+            
+        print("\nTres primeras y últimas actividades económicas del " + str(año))
+        print(tab(lista_de_listas,tablefmt='grid',headers=headerss,
+                colalign=['right','right','left','right','left','right','left','left','left','left',"left"], 
+                maxcolwidths=[7,7,15,7,20,8,20,10,10,10,10], maxheadercolwidths=[7,7,15,7,20,8,20,10,10,10,10]))
+        
+        
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
@@ -172,15 +176,10 @@ if __name__ == "__main__":
         inputs = input('Seleccione una opción para continuar\n')
         try:
             if int(inputs) == 1:
-                print("Desea observar el uso de memoria? (True/False)")
-                mem = input("Respuesta: ")
-                mem = castBoolean(mem)
                 print("Cargando información de los archivos ....\n")
-                answer = load_data(control,mem)
-                #size = controller.size(control)
-                #print("Se cargaron " + str(size) + " filas")
-                print_load_answer(answer)
-                
+                filas = controller.load_data(control)
+                print("Se cargaron " + str(filas) + " filas")
+                print_tabla_load_data(control)
                 
             elif int(inputs) == 2:
                 print_req_1(control)

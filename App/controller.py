@@ -42,36 +42,22 @@ def new_controller():
 
 # Funciones para la carga de datos
 
-def load_data(control,memflag=True):
+def load_data(control):
     """
     Carga los datos del reto
     """
     # TO DO: Realizar la carga de datos
-    start_time = get_time()
-    
-    if memflag is True:
-        tracemalloc.start()
-        start_memory = get_memory()
-        
-    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-50pct.csv"
+    filas = 0
+    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-small.csv"
     input_file = csv.DictReader(open(file, encoding="utf-8"))
     
     for impuesto in input_file:
         model.add_data(control, impuesto)
-    
-    stop_time = get_time()
-    delta_tim = delta_time(start_time, stop_time)
-    
-    if memflag is True:
-        stop_memory = get_memory()
-        tracemalloc.stop()
-        delta_mem = delta_memory(stop_memory, start_memory)
-        return delta_tim, delta_mem
-
-    else:
-        return delta_tim
-
-
+        filas += 1
+        
+    model.sort_codigo_act_ec(control)
+    model.sort_año(control)
+    return filas
 # Funciones de ordenamiento
 
 def sort(control):
@@ -81,9 +67,11 @@ def sort(control):
     #TODO: Llamar la función del modelo para ordenar los datos
     pass
 
-
 # Funciones de consulta sobre el catálogo
-
+def get_3_last_and_first(lista):
+    lista = model.get_3_last_and_first_list(lista)
+    return lista
+    
 def get_data(control, id):
     """
     Retorna un dato por su ID.

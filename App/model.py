@@ -57,7 +57,7 @@ def new_data_structs():
     data_structs = {"años": None,
                     "data": None}
     
-    data_structs["años"] = mp.newMap(numelements=2452,maptype= 'CHAINING', loadfactor= 8)
+    data_structs["años"] = {}
     #data_structs["data"] = lt.newList(datastructure="ARRAY_LIST")
 
     return data_structs
@@ -75,19 +75,14 @@ def add_data(data_structs, data):
                  data["Nombre subsector económico"], data["Total ingresos netos"], data["Total costos y gastos"],
                  data["Total saldo a pagar"], data["Total saldo a favor"], data["Total retenciones"],data["Costos y gastos nómina"])
     
-    if mp.contains(data_structs["años"],data["Año"]):
-        pair_key_val = mp.get(data_structs["años"],data["Año"])
-        lista_año = me.getValue(pair_key_val)
+    if data["Año"] in data_structs["años"]:
+        lista_año = data_structs["años"][data["Año"]]
         lt.addLast(lista_año,d)
         
     else:
         lista_años = lt.newList(datastructure="ARRAY_LIST")
         lt.addLast(lista_años,d)
-        mp.put(data_structs["años"],data["Año"],lista_años)
-
-    #lt.addLast(data_structs["data"],d)
-    #merg.sort(data_structs["data"],sort_criteria_actividad_ec)
-    sort_codigo_act_ec(data_structs)
+        data_structs["años"][data["Año"]] = lista_años
 
 
 # Funciones para creacion de datos
@@ -126,20 +121,12 @@ def get_data(data_structs, id):
     pass
 
 
-def data_size(data_structs):
+def data_size(lista):
     """
     Retorna el tamaño de la lista de datos
     """
-    #TO DO: Crear la función para obtener el tamaño de una lista
-    llaves_años = mp.keySet(data_structs["años"])
-    size = 0
-    
-    for año in lt.iterator(llaves_años):
-        pair_llave_valor = mp.get(data_structs["años"],año)
-        valor = me.getValue(pair_llave_valor)
-        tamaño = lt.size(valor)
-        size += tamaño
-        
+    #TODO: Crear la función para obtener el tamaño de una lista
+    size = lt.size(lista)
     return size
 
 def req_1(data_structs):
@@ -205,6 +192,15 @@ def req_8(data_structs):
     # TODO: Realizar el requerimiento 8
     pass
 
+def get_3_last_and_first_list(lista):
+    size = data_size(lista)
+    first_3 = lt.subList(lista,1,3)
+    last_3 = lt.subList(lista,(size-2),3)
+    
+    for elem in lt.iterator(last_3):
+        lt.addLast(first_3,elem)
+        
+    return first_3
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
@@ -221,7 +217,6 @@ def compare(data_1, data_2, id):
         return "equal"
 
 # Funciones de ordenamiento
-
 
 def sort_criteria_actividad_ec(data_1, data_2):
     """sortCriteria criterio de ordenamiento para las funciones de ordenamiento
@@ -246,16 +241,20 @@ def sort_codigo_act_ec(data_structs):
     Función encargada de ordenar la lista con los datos
     """
     #TO DO: Crear función de ordenamiento
-    llaves = mp.keySet(data_structs["años"])
-    for año in lt.iterator(llaves):
-        llave_valor = mp.get(data_structs["años"],año)
-        lista_año = me.getValue(llave_valor)
+    for año in data_structs["años"]:
+        lista_año = data_structs["años"][año]
         merg.sort(lista_año,sort_criteria_actividad_ec)
+        
         
 def comparar_año(año1,año2):
     if año1 < año2:
         return True
     else:
         return False
+    
+def sort_año(data_structs):
+    data_structs_ordenada =  dict(sorted(data_structs["años"].items(), key=lambda t: t[0]))
+    data_structs["años"] = data_structs_ordenada
+    
             
             
