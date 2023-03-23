@@ -53,9 +53,9 @@ def print_menu():
     print("Bienvenido")
     print("1- Cargar información")
     print("2- Ejecutar Requerimiento 1")
-    print("3- Ejecutar Requerimiento 2")
-    print("4- Ejecutar Requerimiento 3")
-    print("5- Ejecutar Requerimiento 4")
+    #print("3- Ejecutar Requerimiento 2")
+    print("3- Ejecutar Requerimiento 3")
+    print("4- Ejecutar Requerimiento 4")
     print("6- Ejecutar Requerimiento 5")
     print("7- Ejecutar Requerimiento 6")
     print("8- Ejecutar Requerimiento 7")
@@ -105,10 +105,37 @@ def print_tabla_req1(impuesto,año,cod_sector_ec):
     lista_de_listas.append(valores)
     print("\nActividad económica con el mayor saldo total de impuestos a pagar para el sector "+cod_sector_ec+" en el año " +año)
     
-    print(tab(lista_de_listas,tablefmt='grid',headers=headerss,maxcolwidths=[12,20,15,20,15,12,12,12],
-              maxheadercolwidths=[12,20,15,20,15,12,12,12]))
+    print(tab(lista_de_listas,tablefmt='grid',headers=headerss,maxcolwidths=[12,22,15,22,15,12,12,12],
+              maxheadercolwidths=[12,22,15,22,15,12,12,12]))
     
-      
+def print_tabla_req3_y_4(info,año):
+    lista_de_listas = []
+    headerss = list(info.keys())
+    valor = list(info.values())
+    lista_de_listas.append(valor)
+    
+    print(tab(lista_de_listas,tablefmt='grid',headers=headerss,maxcolwidths=[12,22,15,22,15,12,12,12,12],
+              maxheadercolwidths=[12,22,15,22,15,12,12,12,12]))
+    
+def print_tabla_3y4b(act_aportes,criterio):
+    lista_de_listas = []
+    headerss = ["Código actividad económica","Nombre actividad económica", criterio,"Total ingresos netos","Total costos y gastos",
+                "Total saldo a pagar", "Total saldo a favor"]
+    
+    for act in lt.iterator(act_aportes):
+        valores = []
+        valores.append(act["Código actividad económica"])
+        valores.append(act["Nombre actividad económica"])
+        valores.append(act[criterio])
+        valores.append(act["Total ingresos netos"])
+        valores.append(act["Total costos y gastos"])
+        valores.append(act["Total saldo a pagar"])
+        valores.append(act["Total saldo a favor"])
+        lista_de_listas.append(valores)
+    
+    print(tab(lista_de_listas,tablefmt='grid',headers=headerss,maxcolwidths=[12,25,15,22,15,15,15],
+              maxheadercolwidths=[12,25,15,22,15,15,15]))
+    
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
@@ -121,32 +148,41 @@ def print_req_1(control,año,cod_sector_ec):
         Función que imprime la solución del Requerimiento 1 en consola
     """
     # TO DO: Imprimir el resultado del requerimiento 1
-    impuesto = controller.req_1(control,año,cod_sector_ec)
+    impuesto,tiempo = controller.req_1(control,año,cod_sector_ec)
     print_tabla_req1(impuesto,año,cod_sector_ec)
+    print("Memoria: " +str(tiempo)+" [kB]")
 
 
 def print_req_2(control):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 2
+    # TO DO: Imprimir el resultado del requerimiento 2
     pass
 
 
-def print_req_3(control):
+def print_req_3(control,año):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 3
-    pass
+    # TO DO: Imprimir el resultado del requerimiento 3
+    info,act_aportes = controller.req_3(control,año)
+    print("\nSubsector económico con el menor total de retenciones en el año " +str(año))
+    print_tabla_req3_y_4(info,año)
+    print("\nActividades económicas con menores y mayores aportes al valor total de retenciones del subsector")
+    print_tabla_3y4b(act_aportes,"Total retenciones")
 
 
-def print_req_4(control):
+def print_req_4(control,año):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 4
-    pass
+    # TO DO: Imprimir el resultado del requerimiento 4
+    info,act_aportes = controller.req_4(control,año)
+    print("\nSubsector económico con el mayor total de costos y gastos nómina en el año " +str(año))
+    print_tabla_req3_y_4(info,año)
+    print("\nActividades económicas con menores y mayores aportes al valor total de costos y gastos nómina del subsector")
+    print_tabla_3y4b(act_aportes,"Costos y gastos nómina")
 
 
 def print_req_5(control):
@@ -207,10 +243,12 @@ if __name__ == "__main__":
                 print_req_1(control, año,cod_sector_ec)
 
             elif int(inputs) == 3:
-                print_req_2(control)
+                año = input("Elija un año: ")
+                print_req_3(control,año)
 
             elif int(inputs) == 4:
-                print_req_3(control)
+                año = input("Elija un año: ")
+                print_req_4(control,año)
 
             elif int(inputs) == 5:
                 print_req_4(control)

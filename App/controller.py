@@ -25,7 +25,6 @@ import model
 import time
 import csv
 import tracemalloc
-
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
@@ -48,7 +47,7 @@ def load_data(control):
     """
     # TO DO: Realizar la carga de datos
     filas = 0
-    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-small.csv"
+    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-large.csv"
     input_file = csv.DictReader(open(file, encoding="utf-8"))
     
     for impuesto in input_file:
@@ -85,31 +84,48 @@ def req_1(control,año,cod_sector_ec):
     Retorna el resultado del requerimiento 1
     """
     # TO DO: Modificar el requerimiento 1
-    return model.req_1(control,año,cod_sector_ec)
+    #inicio_time = get_time()
+    tracemalloc.start()
+    memoria_i = get_memory()
+    data = model.req_1(control,año,cod_sector_ec)
+    #final_time = get_time()
+    memoria_f = get_memory()
+    tracemalloc.stop()
+    tiempo = delta_memory(memoria_f,memoria_i)
+    
+    return data, tiempo
 
 
 def req_2(control):
     """
     Retorna el resultado del requerimiento 2
     """
-    # TODO: Modificar el requerimiento 2
+    # TO DO: Modificar el requerimiento 2
     pass
 
 
-def req_3(control):
+def req_3(control,año):
     """
     Retorna el resultado del requerimiento 3
     """
-    # TODO: Modificar el requerimiento 3
-    pass
+    # TO DO: Modificar el requerimiento 3
+    #tracemalloc.start()
+    tiempo_i = get_time()
+    data = model.req_3(control,año)
+    tiempo_f = get_time()
+    #tracemalloc.stop()
+    tiempo = delta_time(tiempo_i,tiempo_f)
+    print("Tiempo: " +str(tiempo))
+    
+    return data
 
 
-def req_4(control):
+def req_4(control,año):
     """
     Retorna el resultado del requerimiento 4
     """
     # TODO: Modificar el requerimiento 4
-    pass
+    return model.req_4(control,año)
 
 
 def req_5(control):
