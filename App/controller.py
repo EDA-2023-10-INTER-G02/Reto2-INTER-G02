@@ -47,7 +47,7 @@ def load_data(control):
     """
     # TO DO: Realizar la carga de datos
     filas = 0
-    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-large.csv"
+    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-small.csv"
     input_file = csv.DictReader(open(file, encoding="utf-8"))
     
     for impuesto in input_file:
@@ -115,7 +115,7 @@ def req_3(control,año):
     tiempo_f = get_time()
     #tracemalloc.stop()
     tiempo = delta_time(tiempo_i,tiempo_f)
-    print("Tiempo: " +str(tiempo))
+    #print("Tiempo: " +str(tiempo))
     
     return data
 
@@ -124,8 +124,18 @@ def req_4(control,año):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
-    return model.req_4(control,año)
+    # TO DO: Modificar el requerimiento 4
+    tracemalloc.start()
+    #tiempo_i = get_time()
+    memoria_i = get_memory()
+    data = model.req_4(control,año)
+    memoria_f = get_memory()
+    #tiempo_f = get_time()
+    #tiempo = delta_time(tiempo_i,tiempo_f)
+    tracemalloc.stop()
+    tiempo = delta_memory(memoria_f,memoria_i)
+    print("Memoria: " +str(tiempo))
+    return data
 
 
 def req_5(control):
