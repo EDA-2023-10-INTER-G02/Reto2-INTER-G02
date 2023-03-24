@@ -207,20 +207,18 @@ def req_4(data_structs,año):
         mp.put(map_subsectores_y_totales,subsec,total)
     
     numero_subsec_menor_retenciones,valor = find_menor_o_mayor_mapa(map_subsectores_y_totales,"mayor")
-    pair_key_val_subsec_menor_ret = mp.get(map_sort_subsector,numero_subsec_menor_retenciones)
-    lista_act_sub_sec_menor_ret = me.getValue(pair_key_val_subsec_menor_ret)
-    merg.sort(lista_act_sub_sec_menor_ret,sort_crit_total_costos_nomina)
+    pair_key_val_subsec_mayor_nom = mp.get(map_sort_subsector,numero_subsec_menor_retenciones)
+    lista_act_sub_sec_mayor_nom = me.getValue(pair_key_val_subsec_mayor_nom)
+    merg.sort(lista_act_sub_sec_mayor_nom,sort_crit_total_costos_nomina)
     
-    info_totales_subsect = obtener_totales_subsector(lista_act_sub_sec_menor_ret)
+    info_totales_subsect = obtener_totales_subsector(lista_act_sub_sec_mayor_nom)
     info_totales_subsect["Total costos y gastos de nómina del subsector económico"] = valor
     info_totales_subsect.pop("Total retenciones del subsector económico",None)
     
-    if lt.size(lista_act_sub_sec_menor_ret) > 6:
-        act_aportes = get_3_last_and_first_list(lista_act_sub_sec_menor_ret)
-    
+    if lt.size(lista_act_sub_sec_mayor_nom) > 6:
+        act_aportes = get_3_last_and_first_list(lista_act_sub_sec_mayor_nom)
     else:
-        act_aportes = lista_act_sub_sec_menor_ret
-        
+        act_aportes = lista_act_sub_sec_mayor_nom
     return info_totales_subsect,act_aportes
 
 
