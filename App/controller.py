@@ -47,7 +47,7 @@ def load_data(control):
     """
     # TO DO: Realizar la carga de datos
     filas = 0
-    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-small.csv"
+    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-large.csv"
     input_file = csv.DictReader(open(file, encoding="utf-8"))
     
     for impuesto in input_file:
