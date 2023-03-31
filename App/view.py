@@ -63,12 +63,13 @@ def print_menu():
     print("0- Salir")
 
 
-def load_data(control):
+def load_data(control,tamano):
     """
     Carga los datos
     """
     #TO DO: Realizar la carga de datos
-    data = controller.load_data(control)
+    tamanos=["small.csv","5pct","10pct","20pct","30pct","50pct","80pct","large.csv"]
+    data = controller.load_data(control,tamanos[tamano-1])
     return data
     
 def print_tabla_load_data(control):
@@ -193,20 +194,46 @@ def print_req_5(control):
     pass
 
 
-def print_req_6(control):
+def print_req_6(control,ano,tiempo):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
+    sector,sub_mas,sub_menos = controller.req_6(control,ano,tiempo)
+    print("=============== Req No. 6 Inputs ===============")
+    print("Find the economic activities with the highest total net income for each economic sector in '" + str(ano) + "'\n")
+    print("=============== Req No. 6 Answer ===============")
+    print(tab(sector['elements'],headers='keys',tablefmt='grid',maxcolwidths=15,maxheadercolwidths=15))
+    print("=============== Economic subsector that contributed the most ===============")
+    mas_mas_tabla_anidada = tab(sub_mas[0]['Actividad económica que más aportó'],tablefmt='grid',maxcolwidths=12)
+    mas_menos_tabla_anidada = tab(sub_mas[0]['Actividad económica que menos aportó'],tablefmt='grid',maxcolwidths=12)
+    sub_mas[0]['Actividad económica que más aportó'] = mas_mas_tabla_anidada
+    sub_mas[0]['Actividad económica que menos aportó'] = mas_menos_tabla_anidada
+    print(tab(sub_mas,headers='keys',tablefmt='grid',maxcolwidths=[12,12,12,12,12,12,30,30],maxheadercolwidths=[12,12,12,12,12,12,30,30]))
+    print("=============== Economic subsector that contributed the less ===============")
+    menos_mas_tabla_anidada = tab(sub_menos[0]['Actividad económica que más aportó'],tablefmt='grid',maxcolwidths=12)
+    menos_menos_tabla_anidada = tab(sub_menos[0]['Actividad económica que menos aportó'],tablefmt='grid',maxcolwidths=12)
+    sub_menos[0]['Actividad económica que más aportó'] = menos_mas_tabla_anidada
+    sub_menos[0]['Actividad económica que menos aportó'] = menos_menos_tabla_anidada
+    print(tab(sub_menos,headers='keys',tablefmt='grid',maxcolwidths=[12,12,12,12,12,12,30,30],maxheadercolwidths=[12,12,12,12,12,12,30,30]))
 
-
-def print_req_7(control):
+def print_req_7(control,top,ano,codigo,tiempo):
     """
         Función que imprime la solución del Requerimiento 7 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 7
-    pass
+    lista_top,cant_act = controller.req_7(control,top,ano,codigo,tiempo)
+    print("=============== Req No. 7 Inputs ===============")
+    print("Find the top '" + str(top) + "' economic activities with the lowest total cost and expenses in '" + str(ano) + "' and in subsector '" + str(codigo) + "'\n")
+    print("=============== Req No. 7 Answer ===============\n")
+    if cant_act == 0:
+        print("There are no economic activities in '" + codigo + "' subsector and in the year '" + ano + "'")
+    else:
+        if cant_act < top:
+            print("There are only", cant_act, "economic activities in '" + codigo + "' subsector and in the year '" + ano + "'")
+        else:
+            print("The top '" + str(top) + "' economic activities in '" + codigo + "' subsector and in the year '" + ano + "'")
+        print(tab(lista_top['elements'],headers='keys',tablefmt='grid',maxcolwidths=9,maxheadercolwidths=9))
 
 
 def print_req_8(control):
@@ -232,8 +259,10 @@ if __name__ == "__main__":
         inputs = input('Seleccione una opción para continuar\n')
         try:
             if int(inputs) == 1:
-                print("Cargando información de los archivos ....\n")
-                filas = controller.load_data(control)
+                tamano = int(input("Elija el tamaño del archivo:\n1.Samll (1%)\n2.5%\n3.10%\n4.20%\n5.30%\n6.50%\n7.80%\n8.Large (100%)\n"))
+                tamanos=["small.csv","5pct.csv","10pct.csv","20pct.csv","30pct.csv","50pct.csv","80pct.csv","large.csv"]
+                print("\nCargando información de los archivos ....\n")
+                filas = controller.load_data(control,tamanos[tamano-1])
                 print("Se cargaron " + str(filas) + " filas")
                 print_tabla_load_data(control)
                 
@@ -257,10 +286,18 @@ if __name__ == "__main__":
                 print_req_5(control)
 
             elif int(inputs) == 7:
-                print_req_6(control)
+                ano = input("Escriba el año a analizar: ")
+                tiempo = int(input("Elija: \n1. Para no medir el tiempo\n2. Para medir el tiempo\n")) - 1
+                #memoria = int(input("Elija: \n1. Para no medir la memoria\n2. Para medir la memoria\n")) - 1
+                print_req_6(control,ano,tiempo)
 
             elif int(inputs) == 8:
-                print_req_7(control)
+                ano = input("Escriba el año a analizar: ")
+                codigo = input("Escriba el código del subsector económico a analizar: ")
+                top = int(input("Escirba el número del top que se desea analizar: "))
+                tiempo = int(input("Elija: \n1. Para no medir el tiempo\n2. Para medir el tiempo\n")) - 1
+                #memoria = int(input("Elija: \n1. Para no medir la memoria\n2. Para medir la memoria\n")) - 1
+                print_req_7(control,top,ano,codigo,tiempo)
 
             elif int(inputs) == 9:
                 print_req_8(control)
