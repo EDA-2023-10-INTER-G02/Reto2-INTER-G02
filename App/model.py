@@ -55,9 +55,13 @@ def new_data_structs():
     """
     #TO DO: Inicializar las estructuras de datos
     data_structs = {"años": None,
-                    "data": None}
+                    "data": None,
+                    "sector": None,
+                    "subsector": None}
     
     data_structs["años"] = {}
+    data_structs["sector"] = {}
+    data_structs["subsector"] = {}
     return data_structs
 
 # Funciones para agregar informacion al modelo
@@ -81,7 +85,24 @@ def add_data(data_structs, data):
         lista_años = lt.newList(datastructure="ARRAY_LIST")
         lt.addLast(lista_años,d)
         data_structs["años"][data["Año"]] = lista_años
-
+        
+    if data["Código sector económico"] in data_structs["sector"]:
+        lista_sectores = data_structs["sector"][data["Código sector económico"]]
+        lt.addLast(lista_sectores,d)
+        
+    else:
+        lista_sectores = lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(lista_sectores,d)
+        data_structs["sector"][data["Código sector económico"]] = lista_sectores
+    
+    if data["Código subsector económico"] in data_structs["subsector"]:
+        lista_subsectores = data_structs["subsector"][data["Código subsector económico"]]
+        lt.addLast(lista_subsectores,d)
+        
+    else:
+        lista_subsectores = lt.newList(datastructure="ARRAY_LIST")
+        lt.addLast(lista_subsectores,d)
+        data_structs["subsector"][data["Código subsector económico"]] = lista_subsectores
 
 # Funciones para creacion de datos
 
@@ -105,7 +126,6 @@ def new_data(año, codigo, nom_act_ec, codigo_sec_ec,nombre_sec_ec, codigo_subse
     data["Total saldo a favor"] = saldo_favor
     data["Total retenciones"] = total_retenciones
     data["Costos y gastos nómina"] = costos_gastos_nomina
-
     return data
 
 
@@ -230,20 +250,112 @@ def req_5(data_structs):
     pass
 
 
-def req_6(data_structs):
+def req_6(data_structs,ano):
     """
     Función que soluciona el requerimiento 6
     """
     # TODO: Realizar el requerimiento 6
-    pass
+    data = lt.newList(datastructure='ARRAY_LIST')
+    for sector in data_structs['años'][ano]['elements']:
+        lt.addLast(data,{})
+        elementos = ['Código sector económico','Nombre sector económico','Total ingresos netos','Total costos y gastos',
+                         'Total saldo a pagar','Total saldo a favor']
+        puesto = lt.size(data) - 1
+        for elemento in range(len(elementos)):
+            if elemento > 1 and elemento < 6:
+                data['elements'][puesto][elementos[elemento] + " del sector económico"] = sector[elementos[elemento]]
+            else:
+                data['elements'][puesto][elementos[elemento]] = sector[elementos[elemento]]
+    merg.sort(data,sort_total_ingresos)
+    ma_ingresos = lt.subList(data,1,1)
+    subsectores = lt.newList(datastructure='ARRAY_LIST')
+    for sub in range(lt.size(data_structs["sector"][ma_ingresos['elements'][0]['Código sector económico']])):
+        if data_structs["sector"][ma_ingresos['elements'][0]['Código sector económico']]['elements'][sub]['Año'] == ano:
+            lt.addLast(subsectores,{})
+            elements = ['Código subsector económico','Nombre subsector económico','Total ingresos netos','Total costos y gastos',
+                         'Total saldo a pagar','Total saldo a favor']
+            puesto = lt.size(subsectores) - 1
+            for element in range(len(elements)):
+                if element > 1 and element < 6:
+                    subsectores['elements'][puesto][elements[element] + " del subsector económico"] = data_structs["sector"][ma_ingresos['elements'][0]['Código sector económico']]['elements'][sub][elements[element]]
+                else:
+                    subsectores['elements'][puesto][elements[element]] = data_structs["sector"][ma_ingresos['elements'][0]['Código sector económico']]['elements'][sub][elements[element]]
+    if lt.size(subsectores) > 1:
+        merg.sort(subsectores,sort_total_ingresos_sub)
+    ma_ingresos['elements'][0]['Subsector económico que más aportó'] = lt.firstElement(subsectores)['Código subsector económico']
+    ma_ingresos['elements'][0]['Subsector económico que menos aportó'] = lt.lastElement(subsectores)['Código subsector económico']
+    lista_sub_mas = [lt.firstElement(subsectores)]
+    lista_sub_menos = [lt.lastElement(subsectores)]
+    mas_aporto = lt.newList(datastructure='ARRAY_LIST')
+    for activity in range(lt.size(data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que más aportó']])):
+        if data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que más aportó']]['elements'][activity]['Año'] == ano:
+            lt.addLast(mas_aporto,{})
+            elemens = ['Código actividad económica','Nombre actividad económica','Total ingresos netos','Total costos y gastos',
+                         'Total saldo a pagar','Total saldo a favor']
+            puesto = lt.size(mas_aporto) - 1
+            for elemen in range(len(elemens)):
+                mas_aporto['elements'][puesto][elemens[elemen]] = data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que más aportó']]['elements'][activity][elemens[elemen]]
+    merg.sort(mas_aporto,sort_total_ingresos_act)
+    elems = ['Código actividad económica','Nombre actividad económica','Total ingresos netos','Total costos y gastos',
+                         'Total saldo a pagar','Total saldo a favor']
+    lista_sub_mas[0]['Actividad económica que más aportó'] = []
+    for elem in elems:
+        lista_sub_mas[0]['Actividad económica que más aportó'].append([elem,mas_aporto['elements'][0][elem]])
+    lista_sub_mas[0]['Actividad económica que menos aportó'] = []
+    for elem in elems:
+        lista_sub_mas[0]['Actividad económica que menos aportó'].append([elem,mas_aporto['elements'][lt.size(mas_aporto)-1][elem]])
+    menos_aporto = lt.newList(datastructure='ARRAY_LIST')
+    for activity in range(lt.size(data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que menos aportó']])):
+        if data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que menos aportó']]['elements'][activity]['Año'] == ano:
+            lt.addLast(menos_aporto,{})
+            elemens = ['Código actividad económica','Nombre actividad económica','Total ingresos netos','Total costos y gastos',
+                         'Total saldo a pagar','Total saldo a favor']
+            puesto = lt.size(menos_aporto) - 1
+            for elemen in range(len(elemens)):
+                menos_aporto['elements'][puesto][elemens[elemen]] = data_structs["subsector"][ma_ingresos['elements'][0]['Subsector económico que menos aportó']]['elements'][activity][elemens[elemen]]
+    merg.sort(menos_aporto,sort_total_ingresos_act)
+    lista_sub_menos[0]['Actividad económica que más aportó'] = []
+    for elem in elems:
+        lista_sub_menos[0]['Actividad económica que más aportó'].append([elem,menos_aporto['elements'][0][elem]])
+    lista_sub_menos[0]['Actividad económica que menos aportó'] = []
+    for elem in elems:
+        lista_sub_menos[0]['Actividad económica que menos aportó'].append([elem,menos_aporto['elements'][lt.size(menos_aporto)-1][elem]])
+    return ma_ingresos,lista_sub_mas,lista_sub_menos
 
 
-def req_7(data_structs):
+def req_7(data_structs,top,ano,codigo):
     """
     Función que soluciona el requerimiento 7
     """
     # TODO: Realizar el requerimiento 7
-    pass
+    data = lt.newList(datastructure='ARRAY_LIST')
+    total = {'Total ingresos netos':0,'Total costos y gastos':0,'Total saldo a pagar':0,'Total saldo a favor':0}
+    for actividad in data_structs['años'][ano]['elements']:
+        if actividad['Código subsector económico'] == codigo:
+            elementos = ['Código actividad económica','Nombre actividad económica','Código sector económico','Nombre sector económico',
+                         'Total ingresos netos','Total costos y gastos','Total saldo a pagar','Total saldo a favor']
+            total['Total ingresos netos'] += int(actividad['Total ingresos netos'])
+            total['Total costos y gastos'] += int(actividad['Total costos y gastos'])
+            total['Total saldo a pagar'] += int(actividad['Total saldo a pagar'])
+            total['Total saldo a favor'] += int(actividad['Total saldo a favor'])
+            lt.addLast(data,{})
+            puesto = lt.size(data) - 1
+            for elemento in range(len(elementos)):
+                if elemento > 3:
+                    data['elements'][puesto][elementos[elemento] + " consolidados para el periodo"] = actividad[elementos[elemento]]
+                else:
+                    data['elements'][puesto][elementos[elemento]] = actividad[elementos[elemento]]
+    merg.sort(data, sort_total_costos_gastos)
+    if lt.size(data) > top:
+        for place in range(top):
+            for elemento in range(4,len(elementos)):
+                data['elements'][place][elementos[elemento] + " consolidados para el periodo"] = total[elementos[elemento]]
+        return lt.subList(data,1,top),top
+    else:
+        for place in range(lt.size(data)):
+            for elemento in range(4,len(elementos)):
+                data['elements'][place][elementos[elemento] + " consolidados para el periodo"] = total[elementos[elemento]]
+        return data,lt.size(data)
 
 
 def req_8(data_structs):
@@ -339,6 +451,30 @@ def sort_crit_total_costos_nomina(data_1,data_2):
         return True
     else:
         return False
+    
+    
+def comparar(data_1, data_2, id):
+    return int(data_1[id]) < int(data_2[id])
+
+
+def sort_total_costos_gastos(data_1, data_2):
+    return comparar(data_1, data_2, 'Total costos y gastos consolidados para el periodo')
+
+
+def mayor(data_1, data_2, id):
+    return int(data_1[id]) > int(data_2[id])
+
+
+def sort_total_ingresos(data_1, data_2):
+    return mayor(data_1, data_2, 'Total ingresos netos del sector económico')
+
+
+def sort_total_ingresos_sub(data_1, data_2):
+    return mayor(data_1, data_2, 'Total ingresos netos del subsector económico')
+
+
+def sort_total_ingresos_act(data_1, data_2):
+    return mayor(data_1, data_2, 'Total ingresos netos')
         
         
 def comparar_año(año1,año2):

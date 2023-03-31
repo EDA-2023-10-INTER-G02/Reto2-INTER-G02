@@ -41,13 +41,13 @@ def new_controller():
 
 # Funciones para la carga de datos
 
-def load_data(control):
+def load_data(control,tamano):
     """
     Carga los datos del reto
     """
     # TO DO: Realizar la carga de datos
     filas = 0
-    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-small.csv"
+    file = cf.data_dir + "DIAN/Salida_agregados_renta_juridicos_AG-" + str(tamano)
     input_file = csv.DictReader(open(file, encoding="utf-8"))
     
     for impuesto in input_file:
@@ -145,20 +145,50 @@ def req_5(control):
     # TODO: Modificar el requerimiento 5
     pass
 
-def req_6(control):
+def req_6(control,ano,tiempo):
     """
     Retorna el resultado del requerimiento 6
     """
     # TODO: Modificar el requerimiento 6
-    pass
+    """if memoria:
+        tracemalloc.start()
+        memoria_i = get_memory()"""
+    if tiempo:
+        tiempo_i = get_time()
+    sector,sub_mas,sub_menos = model.req_6(control,ano)
+    """if memoria:
+        memoria_f = get_memory()
+        tracemalloc.stop()
+        memory = delta_memory(memoria_f,memoria_i)
+        print("Memoria: " +str(memory))"""
+    if tiempo:
+        tiempo_f = get_time()
+        time = delta_time(tiempo_i,tiempo_f)
+        print("Tiempo: " +str(time))
+    return sector,sub_mas,sub_menos
 
 
-def req_7(control):
+def req_7(control,top,ano,codigo,tiempo):
     """
     Retorna el resultado del requerimiento 7
     """
     # TODO: Modificar el requerimiento 7
-    pass
+    """if memoria:
+        tracemalloc.start()
+        memoria_i = get_memory()"""
+    if tiempo:
+        tiempo_i = get_time()
+    top, cant = model.req_7(control,top,ano,codigo)
+    """if memoria:
+        memoria_f = get_memory()
+        tracemalloc.stop()
+        memory = delta_memory(memoria_f,memoria_i)
+        print("Memoria: " +str(memory))"""
+    if tiempo:
+        tiempo_f = get_time()
+        time = delta_time(tiempo_i,tiempo_f)
+        print("Tiempo: " +str(time))
+    return top, cant
 
 
 def req_8(control):
